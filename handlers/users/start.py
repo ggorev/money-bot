@@ -37,6 +37,7 @@ async def set_expense(message: Message, state: FSMContext):
         data['expense'] = message.text
         db.add_expense(message.from_user.id, datetime.today().date(), data['category'], float(data['expense']))
         id = db.get_expenses_by_user(message.from_user.id)[-1][0]
+        await message.delete()
         await message.answer(
             f"✅️ Добавлен расход : {data['expense']} ₽ ✅️\nКатегория: {data['category']}\nДата: Сегодня ({str(datetime.today().day)}.{str(datetime.today().month)}.{str(datetime.today().year)})\n📊 Расходы за сегодня: {await get_total_daily_expenses(message.from_user.id)} ₽",
             reply_markup=expense_markup(id))

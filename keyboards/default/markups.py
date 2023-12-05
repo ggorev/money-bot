@@ -14,7 +14,7 @@ edit_amount_message = '✏️ Изменить сумму расхода'
 
 
 def category_markup():
-    markup = ReplyKeyboardMarkup()
+    markup = ReplyKeyboardMarkup(is_persistent=True, resize_keyboard=True)
     markup.row(products, cafe)
     markup.row(leisure, transport)
     markup.row(health, gifts)
