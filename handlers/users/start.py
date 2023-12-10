@@ -5,23 +5,18 @@ from aiogram.types import Message, CallbackQuery
 from filters import IsCategory
 from keyboards.default import *
 from keyboards.inline import *
-from loader import dp, bot
+from loader import dp, bot, db
 from states import ExpenseState, NotesState
+from utils.start import get_total_daily_expenses, get_expense_values
 
 
 @dp.message_handler(CommandStart())
 async def bot_start(message: Message):
     await message.answer(f"Привет, {message.from_user.full_name}! Чтобы добавить новый расход, выберите категорию.",
                          reply_markup=category_markup())
-    await ExpenseState.category.set()
 
 
-async def get_total_daily_expenses(user_id, day=datetime.today().date()):
-    total_expenses = db.get_total_daily_expenses(user_id, day)
-    return round(total_expenses, 2) if total_expenses else 0
-
-
-@dp.message_handler(state=ExpenseState.category)
+@dp.message_handler(IsCategory(), state=ExpenseState.category)
 @dp.message_handler(IsCategory())
 async def set_category(message: Message, state: FSMContext):
     async with state.proxy() as data:
@@ -52,17 +47,6 @@ async def add_notes(query: CallbackQuery, callback_data: dict, state: FSMContext
         data['message'] = query.message
         data['delete_message'] = await query.message.answer('Напишите комментарий.')
     await NotesState.notes.set()
-
-
-async def get_expense_values(id):
-    expense = db.get_expenses_by_id(id)
-    amount = expense[4]
-    category = expense[3]
-    notes = expense[5]
-    day = expense[2].split('-')[2]
-    month = expense[2].split('-')[1]
-    year = expense[2].split('-')[0]
-    return amount, category, notes, day, month, year
 
 
 @dp.message_handler(state=NotesState.notes)

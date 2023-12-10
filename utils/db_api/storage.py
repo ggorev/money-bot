@@ -1,5 +1,5 @@
 import sqlite3
-from datetime import datetime
+from datetime import datetime, date
 
 
 class ExpensesDB:
@@ -64,6 +64,20 @@ class ExpensesDB:
         self.cursor.execute('SELECT SUM(amount) FROM expenses WHERE user_id = ? AND date = ?', (user_id, day))
         total_day_expenses = self.cursor.fetchone()[0]
         return total_day_expenses
+
+    def get_amount_expenses(self, user_id: int, date_from: date, date_to: date):
+        self.cursor.execute(
+            "SELECT category, SUM(amount) AS total_amount FROM expenses WHERE user_id = ? AND date BETWEEN ? AND ? GROUP BY category  ORDER BY total_amount DESC",
+            (user_id, date_from, date_to))
+        expenses = self.cursor.fetchall()
+        return expenses
+
+    def get_amount_expenses_all_time(self, user_id: int):
+        self.cursor.execute(
+            "SELECT category, SUM(amount) AS total_amount FROM expenses WHERE user_id = ? GROUP BY category ORDER BY total_amount DESC",
+            (user_id,))
+        expenses = self.cursor.fetchall()
+        return expenses
 
     def close_connection(self):
         self.connect.close()
