@@ -76,7 +76,6 @@ async def month(query: CallbackQuery, callback_data: dict):
     start_of_month = datetime(current_date.year, current_date.month, 1).date()
     end_of_month = datetime(current_date.year, current_date.month, 31).date()
     expenses = db.get_amount_expenses(user_id, date_from=start_of_month, date_to=end_of_month)
-    print(expenses)
     await query.message.delete()
     await query.message.answer(f"{get_statistics(expenses)}")
 

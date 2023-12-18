@@ -234,6 +234,6 @@ async def accept_day(query: CallbackQuery, callback_data: dict, state: FSMContex
 
 
 @dp.callback_query_handler(expense_cb.filter(action='cancel_choose_day'))
-async def accept_day(query: CallbackQuery, callback_data: dict):
+async def cancel_choose_day(query: CallbackQuery, callback_data: dict):
     id = callback_data['id']
     await query.message.edit_reply_markup(expense_markup(id))
